@@ -1,0 +1,99 @@
+/*
+ * Copyright [2018] [Henter Liu]
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.sap.rediscart.strategy.impl;
+
+import de.hybris.platform.core.model.ItemModel;
+import de.hybris.platform.core.model.order.CartEntryModel;
+import de.hybris.platform.core.model.order.CartModel;
+
+import java.util.Collection;
+
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.sap.rediscart.jalo.order.RedisCart;
+import com.sap.rediscart.model.order.RedisCartModel;
+
+
+/**
+ * @author Henter Liu (henterji@163.com)
+ */
+public class CartEntryModelSaveStrategy extends AbstractModelSaveStrategy
+{
+	private static final Logger LOG = LoggerFactory.getLogger(CartEntryModelSaveStrategy.class);
+
+	@Override
+	protected boolean doAfterSave(final ItemModel model)
+	{
+		final CartEntryModel cartEntry = (CartEntryModel) model;
+		final CartModel cart = cartEntry.getOrder();
+		final RedisCart redisCart = getModelService().getSource(cart);
+		final String cartKey = getRedisKeyGenerator().generateCartKey(cart);
+		getValueOps().set(cartKey, redisCart);
+		LOG.debug("Cart saved to redis: " + cartKey);
+
+		if (cart instanceof RedisCartModel)
+		{
+			final RedisCartModel redisCartModel = (RedisCartModel) cart;
+			final String code = redisCartModel.getCode();
+			if (StringUtils.isNotBlank(code))
+			{
+				getSetOps().remove(getRedisKeyGenerator().generateCodeKey(code), code);
+				getSetOps().add(getRedisKeyGenerator().generateCodeKey(code), code);
+			}
+			final String userId = redisCartModel.getUser().getUid();
+			if (StringUtils.isNotBlank(userId))
+			{
+				getSetOps().remove(getRedisKeyGenerator().generateUserIdKey(userId), code);
+				getSetOps().add(getRedisKeyGenerator().generateUserIdKey(userId), code);
+			}
+			final String guid = redisCartModel.getGuid();
+			if (StringUtils.isNotBlank(guid))
+			{
+				getSetOps().remove(getRedisKeyGenerator().generateGuidKey(guid), code);
+				getSetOps().add(getRedisKeyGenerator().generateGuidKey(guid), code);
+			}
+			final String siteId = redisCartModel.getSite().getUid();
+			if (StringUtils.isNotBlank(siteId))
+			{
+				getSetOps().remove(getRedisKeyGenerator().generateSiteIdKey(siteId), code);
+				getSetOps().add(getRedisKeyGenerator().generateSiteIdKey(siteId), code);
+			}
+		}
+
+		return true;
+	}
+
+	@Override
+	protected boolean doBeforeSave(final Collection<? extends Object> toSave, final ItemModel model)
+	{
+		// TODO: before saving
+		return true;
+	}
+
+	@Override
+	protected boolean doBeforeRemove(final Collection<? extends Object> toSave, final ItemModel model)
+	{
+		return doAfterSave(model);
+	}
+
+	@Override
+	protected boolean doAfterRemove(final ItemModel model)
+	{
+		return false;
+	}
+}

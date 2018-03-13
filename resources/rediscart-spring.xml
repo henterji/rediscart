@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ [y] hybris Platform
+
+ Copyright (c) 2017 SAP SE or an SAP affiliate company.  All rights reserved.
+
+ This software is the confidential and proprietary information of SAP
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with SAP.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/util
+		http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<bean name="abstractModelSaveStrategy" class="com.sap.rediscart.strategy.impl.AbstractModelSaveStrategy" abstract="true">
+		<property name="modelService" ref="modelService" />
+		<property name="redisTemplate" ref="redisTemplate" />
+		<property name="redisKeyGenerator" ref="redisKeyGenerator" />
+	</bean>
+
+	<bean name="cartModelSaveStrategy" class="com.sap.rediscart.strategy.impl.CartModelSaveStrategy" parent="abstractModelSaveStrategy" />
+	<bean name="cartEntryModelSaveStrategy" class="com.sap.rediscart.strategy.impl.CartEntryModelSaveStrategy" parent="abstractModelSaveStrategy" />
+	<bean name="promotionResultSaveStrategy" class="com.sap.rediscart.strategy.impl.PromotionResultSaveStrategy"
+		parent="abstractModelSaveStrategy" />
+
+	<alias alias="modelService" name="rediscartModelService" />
+	<bean name="rediscartModelService" class="com.sap.rediscart.service.impl.RediscartModelService" parent="abstractService">
+		<lookup-method name="lookupConverterRegistry" bean="converterRegistry" />
+		<lookup-method name="lookupInterceptorRegistry" bean="interceptorRegistry" />
+		<lookup-method name="lookupModelCloningStrategy" bean="modelCloningStrategy" />
+		<lookup-method name="lookupModelCloningContext" bean="modelCloningContext" />
+		<lookup-method name="lookupModelSearchStrategy" bean="modelSearchStrategy" />
+		<lookup-method name="lookupSessionService" bean="sessionService" />
+		<lookup-method name="lookupWritePersistenceGateway" bean="writePersistenceGateway" />
+		<property name="modelContext" ref="modelContext" />
+		<property name="modelPersister" ref="resolvingModelPersister" />
+		<property name="modelExtractor" ref="modelExtractor" />
+		<property name="changeSetBuilder" ref="changeSetBuilder" />
+		<property name="eventService" ref="eventService" />
+		<property name="cascader" ref="cascader" />
+		<property name="sourceTransformer" ref="sourceTransformer" />
+
+		<!-- This property enables saving within transactions globally! -->
+		<property name="transactional" value="${model.service.transactional.saves}" />
+		<property name="transactionTemplate">
+			<bean class="org.springframework.transaction.support.TransactionTemplate">
+				<property name="transactionManager" ref="txManager" />
+			</bean>
+		</property>
+		<property name="persistenceTypeService" ref="defaultPersistenceTypeService" />
+		<property name="sldDataContainerProvider" ref="sldDataContainerProvider" />
+
+		<!-- below is customized properties -->
+		<property name="modelSaveHandlers">
+			<util:map key-type="java.lang.String" map-class="java.util.HashMap">
+				<entry key="RedisCart" value-ref="cartModelSaveStrategy" />
+				<entry key="RedisCartEntry" value-ref="cartEntryModelSaveStrategy" />
+				<entry key="CachedPromotionResult" value-ref="promotionResultSaveStrategy" />
+			</util:map>
+		</property>
+	</bean>
+
+	<alias name="custmizedExtendedOrderDao" alias="extendedOrderDao" />
+	<bean id="custmizedExtendedOrderDao" class="com.sap.rediscart.promotionengineservices.order.dao.impl.CustomizedExtendedOrderDao"
+		parent="defaultOrderDao">
+		<property name="userService" ref="userService" />
+		<property name="modelService" ref="modelService" />
+		<property name="redisTemplate" ref="redisTemplate" />
+		<property name="redisKeyGenerator" ref="redisKeyGenerator" />
+	</bean>
+
+	<alias name="customizedPromotionEngineService" alias="promotionEngineService" />
+	<bean id="customizedPromotionEngineService" parent="defaultPromotionEngineService"
+		class="com.sap.rediscart.promotionengineservices.promotionengine.impl.CustomizedPromotionEngineService">
+		<property name="redisTemplate" ref="redisTemplate" />
+		<property name="redisKeyGenerator" ref="redisKeyGenerator" />
+		<property name="modelCloningStrategy" ref="modelCloningStrategy" />
+	</bean>
+
+	<bean id="redisKeyGenerator" class="com.sap.rediscart.util.RedisKeyGenerator" />
+
+	<bean id="abstractCustomizedCartDao" class="com.sap.rediscart.commerceservices.order.dao.impl.AbstractCustomizedCartDao"
+		abstract="true" />
+
+	<alias alias="commerceCartDao" name="customizedCommerceCartDao" />
+	<bean id="customizedCommerceCartDao" class="com.sap.rediscart.commerceservices.order.dao.impl.CustomizedCommerceCartDao"
+		parent="abstractCustomizedCartDao">
+		<!-- add following properties for ootb reference -->
+		<property name="modelService" ref="modelService" />
+		<property name="flexibleSearchService" ref="flexibleSearchService" />
+	</bean>
+
+	<alias alias="cartEntryDao" name="customizedCartEntryDao" />
+	<bean id="customizedCartEntryDao" class="com.sap.rediscart.commerceservices.order.dao.impl.CustomizedCartEntryDao" />
+
+	<alias alias="saveCartDao" name="customizedSaveCartDao" />
+	<bean id="customizedSaveCartDao" class="com.sap.rediscart.commerceservices.order.dao.impl.CustomizedSaveCartDao"
+		parent="customizedCommerceCartDao" />
+
+	<alias alias="cloneAbstractOrderStrategy" name="customizedCloneAbstractOrderStrategy" />
+	<bean id="customizedCloneAbstractOrderStrategy" parent="defaultCloneAbstractOrderStrategy"
+		class="com.sap.rediscart.order.strategy.impl.CustomizedCloneAbstractOrderStrategy">
+	</bean>
+
+	<alias name="customizedMarketplaceCartEntryDao" alias="cartEntryDao" />
+	<bean id="customizedMarketplaceCartEntryDao" class="com.sap.rediscart.marketplaceservices.dao.impl.CustomizedMarketplaceCartEntryDao"
+		parent="defaultCartEntryDao" />
+
+	<!-- Replace the Promotions Manager with a version that understands caching -->
+	<bean id="promotions.manager" class="de.hybris.platform.promotions.jalo.CachingPromotionsManager" init-method="init"
+		destroy-method="destroy" scope="tenant">
+		<property name="cache" ref="promotionsCachingStrategy" />
+	</bean>
+
+	<alias alias="promotionsCachingStrategy" name="defaultPromotionsCachingStrategy" />
+	<bean id="defaultPromotionsCachingStrategy" class="de.hybris.platform.promotions.jalo.DefaultCachingStrategy">
+		<property name="sessionService" ref="sessionService" />
+	</bean>
+
+	<!-- Override the Cart so that calls to get promotion results can be intercepted -->
+	<bean id="de.hybris.platform.jalo.order.Cart" class="com.sap.rediscart.jalo.order.RedisCart" scope="prototype" />
+
+	<import resource="rediscart-actionstrategies-spring.xml" />
+	<import resource="rediscart-redis-spring.xml" />
+</beans>

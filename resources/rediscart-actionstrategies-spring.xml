@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright [2018] [Henter Liu]
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+	<bean id="abstractCustomizedRuleActionStrategy" abstract="true" parent="abstractRuleActionStrategy"
+		class="com.sap.rediscart.promotionengineservices.action.impl.CustomizedRuleActionStrategy" />
+
+	<!-- Coupon start -->
+	<!-- <alias name="customizedAddCouponActionStrategy" alias="addCouponActionStrategy" />
+	<bean id="customizedAddCouponActionStrategy" parent="abstractCustomizedRuleActionStrategy"
+		class="com.sap.rediscart.couponservices.action.impl.CustomizedAddCouponActionStrategy">
+		<property name="promotionAction" value="de.hybris.platform.couponservices.model.RuleBasedAddCouponActionModel" />
+	</bean>
+
+	<bean id="customizedGivenCouponActionStrategiesMergeDirective" depends-on="actionStrategies" parent="listMergeDirective">
+		<property name="add" ref="customizedAddCouponActionStrategy" />
+	</bean>
+
+	<bean id="customizedGivenCouponActionStrategiesMappingMergeDirective" depends-on="promotionActionStrategiesMapping"
+		parent="mapMergeDirective">
+		<property name="key" value="defaultRuleAddCouponRAOAction" />
+		<property name="value" ref="customizedAddCouponActionStrategy" />
+	</bean> -->
+	<!-- Coupon end -->
+
+	<!-- Promotion start -->
+	<!-- AddProductToCart start -->
+	<alias name="customizedAddProductToCartActionStrategy" alias="addProductToCartActionStrategy" />
+	<bean id="customizedAddProductToCartActionStrategy" parent="abstractCustomizedRuleActionStrategy"
+		class="com.sap.rediscart.promotionengineservices.action.impl.CustomizedAddProductToCartActionStrategy">
+		<property name="productService" ref="productService" />
+		<property name="cartService" ref="cartService" />
+		<property name="orderService" ref="orderService" />
+		<property name="orderUtils" ref="orderUtils" />
+		<property name="ruleEngineCalculationService" ref="ruleEngineCalculationService" />
+		<property name="promotionAction" value="de.hybris.platform.promotionengineservices.model.RuleBasedOrderAddProductActionModel" />
+	</bean>
+
+	<bean id="customizedAddProductToCartActionStrategies" depends-on="actionStrategies" parent="listMergeDirective">
+		<property name="add" ref="customizedAddProductToCartActionStrategy" />
+	</bean>
+
+	<bean id="customizedRuleFreeGiftRAOActionStrategiesMapping" depends-on="promotionActionStrategiesMapping" parent="mapMergeDirective">
+		<property name="key" value="defaultRuleFreeGiftRAOAction" />
+		<property name="value" ref="customizedAddProductToCartActionStrategy" />
+	</bean>
+
+	<bean id="customizedRuleFreeGiftToBundleRAOActionStrategiesMapping" depends-on="promotionActionStrategiesMapping"
+		parent="mapMergeDirective">
+		<property name="key" value="defaultRuleFreeGiftToBundleRAOAction" />
+		<property name="value" ref="customizedAddProductToCartActionStrategy" />
+	</bean>
+	<!-- AddProductToCart end -->
+
+	<!-- OrderAdjustTotal start -->
+	<alias name="customizedOrderAdjustTotalActionStrategy" alias="orderTotalAdjustActionStrategy" />
+	<bean id="customizedOrderAdjustTotalActionStrategy" parent="abstractCustomizedRuleActionStrategy"
+		class="com.sap.rediscart.promotionengineservices.action.impl.CustomizedOrderAdjustTotalActionStrategy">
+		<property name="promotionAction" value="de.hybris.platform.promotionengineservices.model.RuleBasedOrderAdjustTotalActionModel" />
+	</bean>
+
+	<bean id="customizedOrderAdjustTotalActionStrategies" depends-on="actionStrategies" parent="listMergeDirective">
+		<property name="add" ref="customizedOrderAdjustTotalActionStrategy" />
+	</bean>
+
+	<bean id="customizedRuleOrderFixedDiscountRAOActionStrategiesMapping" depends-on="promotionActionStrategiesMapping"
+		parent="mapMergeDirective">
+		<property name="key" value="defaultRuleOrderFixedDiscountRAOAction" />
+		<property name="value" ref="customizedOrderAdjustTotalActionStrategy" />
+	</bean>
+
+	<bean id="customizedRuleOrderPercentageDiscountRAOActionStrategiesMapping" depends-on="promotionActionStrategiesMapping"
+		parent="mapMergeDirective">
+		<property name="key" value="defaultRuleOrderPercentageDiscountRAOAction" />
+		<property name="value" ref="customizedOrderAdjustTotalActionStrategy" />
+	</bean>
+
+	<bean id="customizedRuleTargetBundlePriceRAOActionStrategiesMapping" depends-on="promotionActionStrategiesMapping"
+		parent="mapMergeDirective">
+		<property name="key" value="defaultRuleTargetBundlePriceRAOAction" />
+		<property name="value" ref="customizedOrderAdjustTotalActionStrategy" />
+	</bean>
+
+	<bean id="customizedRuleOrderEntryGroupFixedDiscountRAOActionStrategiesMapping" depends-on="promotionActionStrategiesMapping"
+		parent="mapMergeDirective">
+		<property name="key" value="defaultRuleOrderEntryGroupFixedDiscountRAOAction" />
+		<property name="value" ref="customizedOrderAdjustTotalActionStrategy" />
+	</bean>
+
+	<bean id="customizedRuleOrderPercentageDiscountExcludedProductsRAOActionStrategiesMapping" depends-on="promotionActionStrategiesMapping"
+		parent="mapMergeDirective">
+		<property name="key" value="defaultRuleOrderPercentageDiscountExcludedProductsRAOAction" />
+		<property name="value" ref="customizedOrderAdjustTotalActionStrategy" />
+	</bean>
+	<!-- OrderAdjustTotal end -->
+
+	<!-- OrderEntryAdjust start -->
+	<alias name="customizedOrderEntryAdjustActionStrategy" alias="orderEntryAdjustActionStrategy" />
+	<bean id="customizedOrderEntryAdjustActionStrategy" parent="abstractCustomizedRuleActionStrategy"
+		class="com.sap.rediscart.promotionengineservices.action.impl.CustomizedOrderEntryAdjustActionStrategy">
+		<property name="promotionAction" value="de.hybris.platform.promotionengineservices.model.RuleBasedOrderEntryAdjustActionModel" />
+	</bean>
+
+	<bean id="customizedOrderEntryAdjustActionStrategies" depends-on="actionStrategies" parent="listMergeDirective">
+		<property name="add" ref="customizedOrderEntryAdjustActionStrategy" />
+	</bean>
+
+	<bean id="customizedRuleOrderEntryFixedDiscountRAOActionStrategiesMapping" depends-on="promotionActionStrategiesMapping"
+		parent="mapMergeDirective">
+		<property name="key" value="defaultRuleOrderEntryFixedDiscountRAOAction" />
+		<property name="value" ref="customizedOrderEntryAdjustActionStrategy" />
+	</bean>
+
+	<bean id="customizedRuleOrderEntryPercentageDiscountRAOActionStrategiesMapping" depends-on="promotionActionStrategiesMapping"
+		parent="mapMergeDirective">
+		<property name="key" value="defaultRuleOrderEntryPercentageDiscountRAOAction" />
+		<property name="value" ref="customizedOrderEntryAdjustActionStrategy" />
+	</bean>
+
+	<bean id="customizedRulePartnerOrderEntryFixedDiscountRAOActionStrategiesMapping" depends-on="promotionActionStrategiesMapping"
+		parent="mapMergeDirective">
+		<property name="key" value="defaultRulePartnerOrderEntryFixedDiscountRAOAction" />
+		<property name="value" ref="customizedOrderEntryAdjustActionStrategy" />
+	</bean>
+
+	<bean id="customizedRulePartnerOrderEntryPercentageDiscountRAOActionStrategiesMapping" depends-on="promotionActionStrategiesMapping"
+		parent="mapMergeDirective">
+		<property name="key" value="defaultRulePartnerOrderEntryPercentageDiscountRAOAction" />
+		<property name="value" ref="customizedOrderEntryAdjustActionStrategy" />
+	</bean>
+
+	<bean id="customizedRuleAddFreeProductDiscountRAOActionStrategiesMapping" depends-on="promotionActionStrategiesMapping"
+		parent="mapMergeDirective">
+		<property name="key" value="defaultRuleAddFreeProductDiscountRAOAction" />
+		<property name="value" ref="customizedOrderEntryAdjustActionStrategy" />
+	</bean>
+
+	<bean id="customizedRuleOrderEntryFixedPriceRAOActionStrategiesMapping" depends-on="promotionActionStrategiesMapping"
+		parent="mapMergeDirective">
+		<property name="key" value="defaultRuleOrderEntryFixedPriceRAOAction" />
+		<property name="value" ref="customizedOrderEntryAdjustActionStrategy" />
+	</bean>
+
+	<bean id="customizedRulePartnerOrderEntryFixedPriceRAOActionStrategiesMapping" depends-on="promotionActionStrategiesMapping"
+		parent="mapMergeDirective">
+		<property name="key" value="defaultRulePartnerOrderEntryFixedPriceRAOAction" />
+		<property name="value" ref="customizedOrderEntryAdjustActionStrategy" />
+	</bean>
+
+	<bean id="customizedFreeProductDiscountRAOActionStrategiesMapping" depends-on="promotionActionStrategiesMapping" parent="mapMergeDirective">
+		<property name="key" value="defaultFreeProductDiscountRAOAction" />
+		<property name="value" ref="customizedOrderEntryAdjustActionStrategy" />
+	</bean>
+
+	<bean id="customizedRuleOrderEntryPercentageDiscountWithStrategyRAOActionStrategiesMapping" depends-on="promotionActionStrategiesMapping"
+		parent="mapMergeDirective">
+		<property name="key" value="defaultRuleOrderEntryPercentageDiscountWithStrategyRAOAction" />
+		<property name="value" ref="customizedOrderEntryAdjustActionStrategy" />
+	</bean>
+	<!-- OrderEntryAdjust end -->
+
+	<!-- PotentialPromotionMessage start -->
+	<alias name="customizedPotentialPromotionMessageActionStrategy" alias="potentialPromotionMessageActionStrategy" />
+	<bean id="customizedPotentialPromotionMessageActionStrategy" parent="abstractCustomizedRuleActionStrategy"
+		class="com.sap.rediscart.promotionengineservices.action.impl.CustomizedPotentialPromotionMessageActionStrategy">
+		<property name="promotionAction"
+			value="de.hybris.platform.promotionengineservices.model.RuleBasedPotentialPromotionMessageActionModel" />
+	</bean>
+
+	<bean id="customizedPotentialPromotionMessageActionStrategies" depends-on="actionStrategies" parent="listMergeDirective">
+		<property name="add" ref="customizedPotentialPromotionMessageActionStrategy" />
+	</bean>
+
+	<bean id="customizedRuleTriggerMessageRAOActionStrategiesMapping" depends-on="promotionActionStrategiesMapping"
+		parent="mapMergeDirective">
+		<property name="key" value="defaultRuleTriggerMessageRAOAction" />
+		<property name="value" ref="customizedPotentialPromotionMessageActionStrategy" />
+	</bean>
+	<!-- PotentialPromotionMessage end -->
+
+	<!-- Shipping start -->
+	<alias name="customizedShippingActionStrategy" alias="shippingActionStrategy" />
+	<bean id="customizedShippingActionStrategy" parent="abstractCustomizedRuleActionStrategy"
+		class="com.sap.rediscart.promotionengineservices.action.impl.CustomizedShippingActionStrategy">
+		<property name="deliveryModeDao" ref="deliveryModeDao" />
+		<property name="promotionAction" value="de.hybris.platform.promotionengineservices.model.RuleBasedOrderChangeDeliveryModeActionModel" />
+	</bean>
+
+	<bean id="customizedShippingActionStrategies" depends-on="actionStrategies" parent="listMergeDirective">
+		<property name="add" ref="customizedShippingActionStrategy" />
+	</bean>
+
+	<bean id="customizedRuleChangeDeliveryModeRAOActionStrategiesMapping" depends-on="promotionActionStrategiesMapping"
+		parent="mapMergeDirective">
+		<property name="key" value="defaultRuleChangeDeliveryModeRAOAction" />
+		<property name="value" ref="customizedShippingActionStrategy" />
+	</bean>
+	<!-- Shipping end -->
+	<!-- Promotion end -->
+</beans>

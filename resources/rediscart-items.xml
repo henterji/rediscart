@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+ [y] hybris Platform
+
+ Copyright (c) 2017 SAP SE or an SAP affiliate company.  All rights reserved.
+
+ This software is the confidential and proprietary information of SAP
+ ("Confidential Information"). You shall not disclose such Confidential
+ Information and shall use it only in accordance with the terms of the
+ license agreement you entered into with SAP.
+-->
+<items xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="items.xsd">
+	<collectiontypes>
+		<collectiontype code="RedisCartEntryCollection" elementtype="RedisCartEntry" autocreate="true"
+			generate="false" />
+	</collectiontypes>
+
+	<itemtypes>
+		<typegroup name="RedisCart">
+			<itemtype code="RedisCart" extends="Cart" jaloclass="com.sap.rediscart.jalo.order.RedisCart" jaloonly="true"
+				autocreate="true" generate="true">
+				<custom-properties>
+					<property name="legacyPersistence">
+						<value>java.lang.Boolean.TRUE</value>
+					</property>
+				</custom-properties>
+				<attributes>
+					<attribute autocreate="true" redeclare="true" qualifier="entries" type="RedisCartEntryCollection">
+						<modifiers read="true" write="true" search="true" removable="true" optional="true" partof="false" />
+					</attribute>
+				</attributes>
+			</itemtype>
+
+			<itemtype code="RedisCartEntry" extends="CartEntry" jaloclass="com.sap.rediscart.jalo.order.RedisCartEntry"
+				jaloonly="true" autocreate="true" generate="true">
+				<custom-properties>
+					<property name="legacyPersistence">
+						<value>java.lang.Boolean.TRUE</value>
+					</property>
+				</custom-properties>
+				<attributes>
+					<attribute autocreate="true" redeclare="true" qualifier="order" type="RedisCart">
+						<modifiers read="true" write="false" search="true" removable="true" optional="false" initial="true"
+							unique="true" />
+					</attribute>
+				</attributes>
+			</itemtype>
+		</typegroup>
+
+		<!-- <typegroup name="CouponAction">
+			<itemtype code="RedisRuleBasedAddCouponAction" extends="RuleBasedAddCouponAction"
+				jaloclass="com.sap.rediscart.jalo.promotion.action.RedisRuleBasedAddCouponAction" jaloonly="true" autocreate="true"
+				generate="true">
+				<custom-properties>
+					<property name="legacyPersistence">
+						<value>java.lang.Boolean.TRUE</value>
+					</property>
+				</custom-properties>
+				<attributes>
+
+				</attributes>
+			</itemtype>
+		</typegroup> -->
+
+		<typegroup name="RuleBasedPromotionAction">
+			<itemtype code="RedisRuleBasedOrderAddProductAction" extends="RuleBasedOrderAddProductAction"
+				jaloclass="com.sap.rediscart.jalo.promotion.action.RedisRuleBasedOrderAddProductAction" jaloonly="true" autocreate="true"
+				generate="true">
+				<custom-properties>
+					<property name="legacyPersistence">
+						<value>java.lang.Boolean.TRUE</value>
+					</property>
+				</custom-properties>
+				<attributes>
+
+				</attributes>
+			</itemtype>
+
+			<itemtype code="RedisRuleBasedOrderAdjustTotalAction" extends="RuleBasedOrderAdjustTotalAction"
+				jaloclass="com.sap.rediscart.jalo.promotion.action.RedisRuleBasedOrderAdjustTotalAction" jaloonly="true" autocreate="true"
+				generate="true">
+				<custom-properties>
+					<property name="legacyPersistence">
+						<value>java.lang.Boolean.TRUE</value>
+					</property>
+				</custom-properties>
+				<attributes>
+
+				</attributes>
+			</itemtype>
+
+			<itemtype code="RedisRuleBasedOrderChangeDeliveryModeAction" extends="RuleBasedOrderChangeDeliveryModeAction"
+				jaloclass="com.sap.rediscart.jalo.promotion.action.RedisRuleBasedOrderChangeDeliveryModeAction" jaloonly="true"
+				autocreate="true" generate="true">
+				<custom-properties>
+					<property name="legacyPersistence">
+						<value>java.lang.Boolean.TRUE</value>
+					</property>
+				</custom-properties>
+				<attributes>
+
+				</attributes>
+			</itemtype>
+
+			<itemtype code="RedisRuleBasedOrderEntryAdjustAction" extends="RuleBasedOrderEntryAdjustAction"
+				jaloclass="com.sap.rediscart.jalo.promotion.action.RedisRuleBasedOrderEntryAdjustAction" jaloonly="true" autocreate="true"
+				generate="true">
+				<custom-properties>
+					<property name="legacyPersistence">
+						<value>java.lang.Boolean.TRUE</value>
+					</property>
+				</custom-properties>
+				<attributes>
+
+				</attributes>
+			</itemtype>
+
+			<itemtype code="RedisRuleBasedPotentialPromotionMessageAction" extends="RuleBasedPotentialPromotionMessageAction"
+				jaloclass="com.sap.rediscart.jalo.promotion.action.RedisRuleBasedPotentialPromotionMessageAction" jaloonly="true"
+				autocreate="true" generate="true">
+				<custom-properties>
+					<property name="legacyPersistence">
+						<value>java.lang.Boolean.TRUE</value>
+					</property>
+				</custom-properties>
+				<attributes>
+
+				</attributes>
+			</itemtype>
+		</typegroup>
+	</itemtypes>
+</items>
