@@ -40,7 +40,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
 import org.springframework.data.redis.core.ValueOperations;
 
-import com.sap.rediscart.model.order.RedisCartModel;
 import com.sap.rediscart.util.RedisKeyGenerator;
 
 
@@ -52,9 +51,11 @@ public class CustomizedCommerceCartDao extends AbstractCustomizedCartDao impleme
 	@SuppressWarnings("unused")
 	private static final Logger LOG = Logger.getLogger(CustomizedCommerceCartDao.class);
 
+	private final Comparator<CartModel> c = (o1, o2) -> o2.getModifiedtime().compareTo(o1.getModifiedtime());
+
+	private RedisTemplate<String, Object> redisTemplate;
 	private ValueOperations<String, Object> valueOps;
 	private SetOperations<String, Object> setOps;
-	private RedisTemplate<String, Object> redisTemplate;
 
 	@Resource
 	public void setRedisTemplate(final RedisTemplate<String, Object> redisTemplate)
@@ -79,8 +80,7 @@ public class CustomizedCommerceCartDao extends AbstractCustomizedCartDao impleme
 		{
 			return null;
 		}
-		final RedisCartModel redisCart = getModelService().get(value);
-		return redisCart;
+		return getModelService().get(value);
 	}
 
 	@Override
@@ -92,21 +92,14 @@ public class CustomizedCommerceCartDao extends AbstractCustomizedCartDao impleme
 			final String userIdKey = redisKeyGenerator.generateUserIdKey(user.getUid());
 			final String siteIdKey = redisKeyGenerator.generateSiteIdKey(site.getUid());
 			final Set<Object> set = setOps.intersect(null, Arrays.asList(guidKey, userIdKey, siteIdKey));
-			final List<CartModel> cartModels = new ArrayList<CartModel>();
+			final List<CartModel> cartModels = new ArrayList<>();
 			for (final Object key : set)
 			{
 				final String cartCode = key.toString();
 				cartModels.add(getCartByCode(cartCode));
 			}
 
-			Collections.sort(cartModels, new Comparator<CartModel>()
-			{
-				@Override
-				public int compare(final CartModel o1, final CartModel o2)
-				{
-					return o2.getModifiedtime().compareTo(o1.getModifiedtime());
-				}
-			});
+			Collections.sort(cartModels, c);
 
 			if (!cartModels.isEmpty())
 			{
@@ -126,21 +119,14 @@ public class CustomizedCommerceCartDao extends AbstractCustomizedCartDao impleme
 		final String guidKey = redisKeyGenerator.generateGuidKey(guid);
 		final String siteIdKey = redisKeyGenerator.generateSiteIdKey(site.getUid());
 		final Set<Object> set = setOps.intersect(null, Arrays.asList(guidKey, siteIdKey));
-		final List<CartModel> cartModels = new ArrayList<CartModel>();
+		final List<CartModel> cartModels = new ArrayList<>();
 		for (final Object key : set)
 		{
 			final String cartCode = key.toString();
 			cartModels.add(getCartByCode(cartCode));
 		}
 
-		Collections.sort(cartModels, new Comparator<CartModel>()
-		{
-			@Override
-			public int compare(final CartModel o1, final CartModel o2)
-			{
-				return o2.getModifiedtime().compareTo(o1.getModifiedtime());
-			}
-		});
+		Collections.sort(cartModels, c);
 
 		if (!cartModels.isEmpty())
 		{
@@ -155,21 +141,14 @@ public class CustomizedCommerceCartDao extends AbstractCustomizedCartDao impleme
 		final String codeKey = redisKeyGenerator.generateCodeKey(code);
 		final String userIdKey = redisKeyGenerator.generateUserIdKey(user.getUid());
 		final Set<Object> set = setOps.intersect(null, Arrays.asList(codeKey, userIdKey));
-		final List<CartModel> cartModels = new ArrayList<CartModel>();
+		final List<CartModel> cartModels = new ArrayList<>();
 		for (final Object key : set)
 		{
 			final String cartCode = key.toString();
 			cartModels.add(getCartByCode(cartCode));
 		}
 
-		Collections.sort(cartModels, new Comparator<CartModel>()
-		{
-			@Override
-			public int compare(final CartModel o1, final CartModel o2)
-			{
-				return o2.getModifiedtime().compareTo(o1.getModifiedtime());
-			}
-		});
+		Collections.sort(cartModels, c);
 
 		if (!cartModels.isEmpty())
 		{
@@ -184,7 +163,7 @@ public class CustomizedCommerceCartDao extends AbstractCustomizedCartDao impleme
 		final String userIdKey = redisKeyGenerator.generateUserIdKey(user.getUid());
 		final String siteIdKey = redisKeyGenerator.generateSiteIdKey(site.getUid());
 		final Set<Object> set = setOps.intersect(null, Arrays.asList(userIdKey, siteIdKey));
-		final List<CartModel> cartModels = new ArrayList<CartModel>();
+		final List<CartModel> cartModels = new ArrayList<>();
 		for (final Object key : set)
 		{
 			final String cartCode = key.toString();
@@ -195,14 +174,7 @@ public class CustomizedCommerceCartDao extends AbstractCustomizedCartDao impleme
 			}
 		}
 
-		Collections.sort(cartModels, new Comparator<CartModel>()
-		{
-			@Override
-			public int compare(final CartModel o1, final CartModel o2)
-			{
-				return o2.getModifiedtime().compareTo(o1.getModifiedtime());
-			}
-		});
+		Collections.sort(cartModels, c);
 
 		if (!cartModels.isEmpty())
 		{
@@ -217,7 +189,7 @@ public class CustomizedCommerceCartDao extends AbstractCustomizedCartDao impleme
 		final String userIdKey = redisKeyGenerator.generateUserIdKey(user.getUid());
 		final String siteIdKey = redisKeyGenerator.generateSiteIdKey(site.getUid());
 		final Set<Object> set = setOps.intersect(null, Arrays.asList(userIdKey, siteIdKey));
-		final List<CartModel> cartModels = new ArrayList<CartModel>();
+		final List<CartModel> cartModels = new ArrayList<>();
 		for (final Object key : set)
 		{
 			final String cartCode = key.toString();
@@ -228,14 +200,7 @@ public class CustomizedCommerceCartDao extends AbstractCustomizedCartDao impleme
 			}
 		}
 
-		Collections.sort(cartModels, new Comparator<CartModel>()
-		{
-			@Override
-			public int compare(final CartModel o1, final CartModel o2)
-			{
-				return o2.getModifiedtime().compareTo(o1.getModifiedtime());
-			}
-		});
+		Collections.sort(cartModels, c);
 
 		return cartModels;
 	}
@@ -244,73 +209,38 @@ public class CustomizedCommerceCartDao extends AbstractCustomizedCartDao impleme
 	public List<CartModel> getCartsForRemovalForSiteAndUser(final Date modifiedBefore, final BaseSiteModel site,
 			final UserModel user)
 	{
+		final List<CartModel> cartModels = new ArrayList<>();
+		final String siteIdKey = redisKeyGenerator.generateSiteIdKey(site.getUid());
+		Set<Object> set = null;
 		if (user == null)
 		{
-			final String siteIdKey = redisKeyGenerator.generateSiteIdKey(site.getUid());
-			final Set<Object> set = setOps.intersect(null, Arrays.asList(siteIdKey));
-			final List<CartModel> cartModels = new ArrayList<CartModel>();
-			for (final Object key : set)
-			{
-				final String cartCode = key.toString();
-				final CartModel cartModel = getCartByCode(cartCode);
-				if (cartModel != null)
-				{
-					final Date modifiedtime = cartModel.getModifiedtime();
-					if (modifiedtime.before(modifiedBefore) || modifiedtime.equals(modifiedBefore))
-					{
-						if (cartModel.getSaveTime() == null)
-						{
-							cartModels.add(cartModel);
-						}
-					}
-				}
-			}
-
-			if (CollectionUtils.isNotEmpty(cartModels))
-			{
-				Collections.sort(cartModels, new Comparator<CartModel>()
-				{
-					@Override
-					public int compare(final CartModel o1, final CartModel o2)
-					{
-						return o2.getModifiedtime().compareTo(o1.getModifiedtime());
-					}
-				});
-			}
-
-			return cartModels;
+			set = setOps.intersect(null, Arrays.asList(siteIdKey));
 		}
 		else
 		{
 			final String userIdKey = redisKeyGenerator.generateUserIdKey(user.getUid());
-			final String siteIdKey = redisKeyGenerator.generateSiteIdKey(site.getUid());
-			final Set<Object> set = setOps.intersect(null, Arrays.asList(userIdKey, siteIdKey));
-			final List<CartModel> cartModels = new ArrayList<CartModel>();
-			for (final Object key : set)
+			set = setOps.intersect(null, Arrays.asList(userIdKey, siteIdKey));
+		}
+		for (final Object key : set)
+		{
+			final String cartCode = key.toString();
+			final CartModel cartModel = getCartByCode(cartCode);
+			if (cartModel != null)
 			{
-				final String cartCode = key.toString();
-				final CartModel cartModel = getCartByCode(cartCode);
 				final Date modifiedtime = cartModel.getModifiedtime();
-				if (modifiedtime.before(modifiedBefore) || modifiedtime.equals(modifiedBefore))
+				if ((modifiedtime.before(modifiedBefore) || modifiedtime.equals(modifiedBefore)) && cartModel.getSaveTime() == null)
 				{
-					if (cartModel.getSaveTime() == null)
-					{
-						cartModels.add(cartModel);
-					}
+					cartModels.add(cartModel);
 				}
 			}
-
-			Collections.sort(cartModels, new Comparator<CartModel>()
-			{
-				@Override
-				public int compare(final CartModel o1, final CartModel o2)
-				{
-					return o2.getModifiedtime().compareTo(o1.getModifiedtime());
-				}
-			});
-
-			return cartModels;
 		}
+
+		if (CollectionUtils.isNotEmpty(cartModels))
+		{
+			Collections.sort(cartModels, c);
+		}
+
+		return cartModels;
 	}
 
 	// add following properties for ootb reference

@@ -51,14 +51,20 @@ public class CustomizedSaveCartDao extends CustomizedCommerceCartDao implements 
 	@SuppressWarnings("unused")
 	private static final Logger LOG = Logger.getLogger(CustomizedSaveCartDao.class);
 
+	private final Comparator<CartModel> c = (o1, o2) -> o2.getModifiedtime().compareTo(o1.getModifiedtime());
+	private final Comparator<CartModel> c1 = (o1, o2) -> o2.getSaveTime().compareTo(o1.getSaveTime());
+	private final Comparator<CartModel> c2 = (o1, o2) -> o2.getName().compareTo(o1.getName());
+	private final Comparator<CartModel> c3 = (o1, o2) -> o2.getCode().compareTo(o1.getCode());
+	private final Comparator<CartModel> c4 = (o1, o2) -> o2.getTotalPrice().compareTo(o1.getTotalPrice());
+
 	protected static final String SORT_CODE_BY_DATE_MODIFIED = "byDateModified";
 	protected static final String SORT_CODE_BY_DATE_SAVED = "byDateSaved";
 	protected static final String SORT_CODE_BY_NAME = "byName";
 	protected static final String SORT_CODE_BY_CODE = "byCode";
 	protected static final String SORT_CODE_BY_TOTAL = "byTotal";
 
-	private SetOperations<String, Object> setOps;
 	private RedisTemplate<String, Object> redisTemplate;
+	private SetOperations<String, Object> setOps;
 
 	@Override
 	@Resource
@@ -79,7 +85,7 @@ public class CustomizedSaveCartDao extends CustomizedCommerceCartDao implements 
 	{
 		final String siteIdKey = redisKeyGenerator.generateSiteIdKey(site.getUid());
 		final Set<Object> set = setOps.intersect(null, Arrays.asList(siteIdKey));
-		final List<CartModel> cartModels = new ArrayList<CartModel>();
+		final List<CartModel> cartModels = new ArrayList<>();
 		for (final Object key : set)
 		{
 			final String cartCode = key.toString();
@@ -95,14 +101,7 @@ public class CustomizedSaveCartDao extends CustomizedCommerceCartDao implements 
 			}
 		}
 
-		Collections.sort(cartModels, new Comparator<CartModel>()
-		{
-			@Override
-			public int compare(final CartModel o1, final CartModel o2)
-			{
-				return o2.getModifiedtime().compareTo(o1.getModifiedtime());
-			}
-		});
+		Collections.sort(cartModels, c);
 
 		return cartModels;
 	}
@@ -111,7 +110,7 @@ public class CustomizedSaveCartDao extends CustomizedCommerceCartDao implements 
 	public SearchPageData<CartModel> getSavedCartsForSiteAndUser(final PageableData pageableData, final BaseSiteModel baseSite,
 			final UserModel user, final List<OrderStatus> orderStatus)
 	{
-		final List<CartModel> cartModels = new ArrayList<CartModel>();
+		final List<CartModel> cartModels = new ArrayList<>();
 		if (baseSite != null)
 		{
 			if (CollectionUtils.isNotEmpty(orderStatus))
@@ -193,75 +192,21 @@ public class CustomizedSaveCartDao extends CustomizedCommerceCartDao implements 
 		switch (sortCode)
 		{
 			case SORT_CODE_BY_DATE_MODIFIED:
-				sort(cartModels, Arrays.asList(new Comparator<CartModel>()
-				{
-					@Override
-					public int compare(final CartModel o1, final CartModel o2)
-					{
-						return o2.getModifiedtime().compareTo(o1.getModifiedtime());
-					}
-				}));
+				sort(cartModels, Arrays.asList(c));
 				break;
 			case SORT_CODE_BY_DATE_SAVED:
-				sort(cartModels, Arrays.asList(new Comparator<CartModel>()
-				{
-					@Override
-					public int compare(final CartModel o1, final CartModel o2)
-					{
-						return o2.getSaveTime().compareTo(o1.getSaveTime());
-					}
-				}));
+				sort(cartModels, Arrays.asList(c1));
 				break;
 			case SORT_CODE_BY_NAME:
-				sort(cartModels, Arrays.asList(new Comparator<CartModel>()
-				{
-					@Override
-					public int compare(final CartModel o1, final CartModel o2)
-					{
-						return o1.getName().compareTo(o2.getName());
-					}
-				}, new Comparator<CartModel>()
-				{
-					@Override
-					public int compare(final CartModel o1, final CartModel o2)
-					{
-						return o2.getModifiedtime().compareTo(o1.getModifiedtime());
-					}
-				}));
+				sort(cartModels, Arrays.asList(c2, c));
 				break;
 			case SORT_CODE_BY_CODE:
-				sort(cartModels, Arrays.asList(new Comparator<CartModel>()
-				{
-					@Override
-					public int compare(final CartModel o1, final CartModel o2)
-					{
-						return o1.getCode().compareTo(o2.getCode());
-					}
-				}, new Comparator<CartModel>()
-				{
-					@Override
-					public int compare(final CartModel o1, final CartModel o2)
-					{
-						return o2.getModifiedtime().compareTo(o1.getModifiedtime());
-					}
-				}));
+				sort(cartModels, Arrays.asList(c3, c));
 				break;
 			case SORT_CODE_BY_TOTAL:
-				sort(cartModels, Arrays.asList(new Comparator<CartModel>()
-				{
-					@Override
-					public int compare(final CartModel o1, final CartModel o2)
-					{
-						return o1.getTotalPrice().compareTo(o2.getTotalPrice());
-					}
-				}, new Comparator<CartModel>()
-				{
-					@Override
-					public int compare(final CartModel o1, final CartModel o2)
-					{
-						return o2.getModifiedtime().compareTo(o1.getModifiedtime());
-					}
-				}));
+				sort(cartModels, Arrays.asList(c4, c));
+				break;
+			default:
 				break;
 		}
 
@@ -304,35 +249,26 @@ public class CustomizedSaveCartDao extends CustomizedCommerceCartDao implements 
 	@Override
 	public Integer getSavedCartsCountForSiteAndUser(final BaseSiteModel baseSite, final UserModel user)
 	{
-		final List<CartModel> cartModels = new ArrayList<CartModel>();
+		final List<CartModel> cartModels = new ArrayList<>();
 
+		final String userIdKey = redisKeyGenerator.generateUserIdKey(user.getUid());
+		Set<Object> set = null;
 		if (baseSite != null)
 		{
-			final String userIdKey = redisKeyGenerator.generateUserIdKey(user.getUid());
 			final String siteIdKey = redisKeyGenerator.generateSiteIdKey(baseSite.getUid());
-			final Set<Object> set = setOps.intersect(null, Arrays.asList(userIdKey, siteIdKey));
-			for (final Object key : set)
-			{
-				final String cartCode = key.toString();
-				final CartModel cartModel = getCartByCode(cartCode);
-				if (cartModel.getSaveTime() != null)
-				{
-					cartModels.add(cartModel);
-				}
-			}
+			set = setOps.intersect(null, Arrays.asList(userIdKey, siteIdKey));
 		}
 		else
 		{
-			final String userIdKey = redisKeyGenerator.generateUserIdKey(user.getUid());
-			final Set<Object> set = setOps.intersect(null, Arrays.asList(userIdKey));
-			for (final Object key : set)
+			set = setOps.intersect(null, Arrays.asList(userIdKey));
+		}
+		for (final Object key : set)
+		{
+			final String cartCode = key.toString();
+			final CartModel cartModel = getCartByCode(cartCode);
+			if (cartModel.getSaveTime() != null)
 			{
-				final String cartCode = key.toString();
-				final CartModel cartModel = getCartByCode(cartCode);
-				if (cartModel.getSaveTime() != null)
-				{
-					cartModels.add(cartModel);
-				}
+				cartModels.add(cartModel);
 			}
 		}
 

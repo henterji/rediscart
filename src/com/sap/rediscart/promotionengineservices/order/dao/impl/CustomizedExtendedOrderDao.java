@@ -17,14 +17,12 @@ package com.sap.rediscart.promotionengineservices.order.dao.impl;
 
 import de.hybris.platform.core.model.order.AbstractOrderModel;
 import de.hybris.platform.promotionengineservices.order.dao.impl.DefaultExtendedOrderDao;
-import de.hybris.platform.servicelayer.model.ModelService;
 import de.hybris.platform.servicelayer.user.UserService;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
-import com.sap.rediscart.model.order.RedisCartModel;
 import com.sap.rediscart.util.RedisKeyGenerator;
 
 
@@ -36,7 +34,6 @@ public class CustomizedExtendedOrderDao extends DefaultExtendedOrderDao
 	private ValueOperations<String, Object> valueOps;
 	private RedisTemplate<String, Object> redisTemplate;
 
-	private ModelService modelService;
 	private UserService userService;
 	private RedisKeyGenerator redisKeyGenerator;
 
@@ -58,8 +55,7 @@ public class CustomizedExtendedOrderDao extends DefaultExtendedOrderDao
 		{
 			return super.findOrderByCode(code);
 		}
-		final RedisCartModel redisCart = getModelService().get(value);
-		return redisCart;
+		return getModelService().get(value);
 	}
 
 	/**
@@ -78,25 +74,6 @@ public class CustomizedExtendedOrderDao extends DefaultExtendedOrderDao
 	{
 		this.redisTemplate = redisTemplate;
 		this.valueOps = this.redisTemplate.opsForValue();
-	}
-
-	/**
-	 * @return the modelService
-	 */
-	@Override
-	public ModelService getModelService()
-	{
-		return modelService;
-	}
-
-	/**
-	 * @param modelService
-	 *           the modelService to set
-	 */
-	@Override
-	public void setModelService(final ModelService modelService)
-	{
-		this.modelService = modelService;
 	}
 
 	/**

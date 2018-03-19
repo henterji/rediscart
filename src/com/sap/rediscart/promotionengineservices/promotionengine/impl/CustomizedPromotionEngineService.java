@@ -137,7 +137,7 @@ public class CustomizedPromotionEngineService extends DefaultPromotionEngineServ
 			return; // Do nothing if it is not redis cart.
 		}
 		final Collection<PromotionResultModel> allPromotions = model.getAllPromotionResults();
-		final Set<PromotionResultModel> allToSavepromotions = new HashSet<PromotionResultModel>();
+		final Set<PromotionResultModel> allToSavepromotions = new HashSet<>();
 		for (final PromotionResultModel promotionResult : allPromotions)
 		{
 			if (promotionResult.getItemtype().equals(CachedPromotionResultModel._TYPECODE))
@@ -147,7 +147,7 @@ public class CustomizedPromotionEngineService extends DefaultPromotionEngineServ
 
 				final CachedPromotionResultModel cachedPromotionResult = (CachedPromotionResultModel) promotionResult;
 				final Collection<AbstractPromotionActionModel> actions = cachedPromotionResult.getCachedActions();
-				final Set<AbstractPromotionActionModel> toSaveActions = new HashSet<AbstractPromotionActionModel>();
+				final Set<AbstractPromotionActionModel> toSaveActions = new HashSet<>();
 				for (final AbstractPromotionActionModel abstractPromotionAction : actions)
 				{
 					AbstractPromotionActionModel toSavePaModel;
@@ -182,7 +182,7 @@ public class CustomizedPromotionEngineService extends DefaultPromotionEngineServ
 				toSavePrModel.setActions(toSaveActions);
 				toSavePrModel.setAllPromotionActions(toSaveActions);
 				final Collection<PromotionOrderEntryConsumedModel> cachedConsumedEntries = cachedPromotionResult.getConsumedEntries();
-				final Collection<PromotionOrderEntryConsumedModel> toSaveConsumedEntries = new ArrayList<PromotionOrderEntryConsumedModel>();
+				final Collection<PromotionOrderEntryConsumedModel> toSaveConsumedEntries = new ArrayList<>();
 				for (final PromotionOrderEntryConsumedModel cachedConsumedEntry : cachedConsumedEntries)
 				{
 					if (cachedConsumedEntry.getItemtype().equals(CachedPromotionOrderEntryConsumedModel._TYPECODE))
@@ -206,7 +206,7 @@ public class CustomizedPromotionEngineService extends DefaultPromotionEngineServ
 
 	private ModelCloningContext getCloneContext()
 	{
-		final ModelCloningContext context = new ModelCloningContext()
+		return new ModelCloningContext()
 		{
 			@Override
 			public boolean skipAttribute(final Object original, final String qualifier)
@@ -232,7 +232,6 @@ public class CustomizedPromotionEngineService extends DefaultPromotionEngineServ
 				return null;
 			}
 		};
-		return context;
 	}
 
 	/**

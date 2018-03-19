@@ -17,6 +17,7 @@
 		http://www.springframework.org/schema/aop/spring-aop.xsd
 		http://www.springframework.org/schema/util
 		http://www.springframework.org/schema/util/spring-util.xsd">
+	<import resource="rediscart-redis-spring.xml" />
 
 	<bean name="abstractModelSaveStrategy" class="com.sap.rediscart.strategy.impl.AbstractModelSaveStrategy" abstract="true">
 		<property name="modelService" ref="modelService" />
@@ -70,7 +71,6 @@
 	<bean id="custmizedExtendedOrderDao" class="com.sap.rediscart.promotionengineservices.order.dao.impl.CustomizedExtendedOrderDao"
 		parent="defaultOrderDao">
 		<property name="userService" ref="userService" />
-		<property name="modelService" ref="modelService" />
 		<property name="redisTemplate" ref="redisTemplate" />
 		<property name="redisKeyGenerator" ref="redisKeyGenerator" />
 	</bean>
@@ -127,5 +127,4 @@
 	<bean id="de.hybris.platform.jalo.order.Cart" class="com.sap.rediscart.jalo.order.RedisCart" scope="prototype" />
 
 	<import resource="rediscart-actionstrategies-spring.xml" />
-	<import resource="rediscart-redis-spring.xml" />
 </beans>
