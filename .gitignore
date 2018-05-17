@@ -4,3 +4,4 @@
 /lib/
 /extensioninfo.xsd
 /platformhome.properties
+/web/webroot/WEB-INF/classes/**/*.class

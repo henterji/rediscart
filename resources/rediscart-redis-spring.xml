@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright [2018] [Henter Liu]
 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:context="http://www.springframework.org/schema/context"
@@ -10,25 +24,25 @@
 
 	<!-- Jedis Pool -->
 	<bean id="redisClusterPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
-		<!-- 最大连接数 -->
+		<!-- The cap on the number of objects that can be allocated by the pool (checked out to clients, or idle awaiting checkout) at a given time. -->
 		<property name="maxTotal" value="${redis.pool.maxTotal}" />
-		<!-- 最大空闲时间 -->
+		<!-- The maximum number of objects that can sit idle in the pool at any time. -->
 		<property name="maxIdle" value="${redis.pool.maxIdle}" />
-		<!-- 每次最大连接数 -->
+		<!-- The number of objects examined in each run of the idle object evictor. -->
 		<property name="numTestsPerEvictionRun" value="${redis.pool.numTestsPerEvictionRun}" />
-		<!-- 释放扫描的扫描间隔 -->
+		<!-- How long the eviction thread should sleep before "runs" of examining idle objects. -->
 		<property name="timeBetweenEvictionRunsMillis" value="${redis.pool.timeBetweenEvictionRunsMillis}" />
-		<!-- 连接的最小空闲时间 -->
+		<!-- The minimum amount of time that an object may sit idle in the pool before it is eligible for eviction due to idle time. -->
 		<property name="minEvictableIdleTimeMillis" value="${redis.pool.minEvictableIdleTimeMillis}" />
-		<!-- 连接控歘按时间多久后释放，当空闲时间>该值且空闲连接>最大空闲连接数时直接释放 -->
+		<!-- The minimum amount of time an object may sit idle in the pool before it is eligible for eviction by the idle object evictor (if any), with the extra condition that at least "minIdle" object instances remain in the pool. -->
 		<property name="softMinEvictableIdleTimeMillis" value="${redis.pool.softMinEvictableIdleTimeMillis}" />
-		<!-- 获得链接时的最大等待毫秒数，小于0：阻塞不确定时间，默认-1 -->
+		<!-- The maximum amount of time (in milliseconds) the borrowObject() method should block before throwing an exception when the pool is exhausted and BlockWhenExhausted is true. -->
 		<property name="maxWaitMillis" value="${redis.pool.maxWaitMillis}" />
-		<!-- 在获得链接的时候检查有效性，默认false -->
+		<!-- Whether or not the pool will attempt to validate each object before it is returned from the borrowObject() method. -->
 		<property name="testOnBorrow" value="${redis.pool.testOnBorrow}" />
-		<!-- 在空闲时检查有效性，默认false -->
+		<!-- Whether or not idle objects should be validated using the factory's PoolableObjectFactory.validateObject(T) method. -->
 		<property name="testWhileIdle" value="${redis.pool.testWhileIdle}" />
-		<!-- 连接耗尽时是否阻塞，false报异常，true阻塞超时 默认：true -->
+		<!-- Whether to block when the borrowObject() method is invoked when the pool is exhausted (the maximum number of "active" objects has been reached). -->
 		<property name="blockWhenExhausted" value="${redis.pool.blockWhenExhausted}" />
 	</bean>
 

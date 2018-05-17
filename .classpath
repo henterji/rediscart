@@ -4,29 +4,16 @@
 	<classpathentry kind="lib" path="web/webroot/WEB-INF/lib/displaytag-1.2.jar"/>
 	<classpathentry kind="lib" path="web/webroot/WEB-INF/lib/jstl-impl-1.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="resources"/>
-	<classpathentry kind="lib" path="lib/commons-logging-1.2.jar"/>
-	<classpathentry kind="lib" path="lib/commons-pool2-2.4.2.jar"/>
-	<classpathentry kind="lib" path="lib/jcl-over-slf4j-1.7.25.jar"/>
 	<classpathentry kind="lib" path="lib/jedis-2.9.0.jar"/>
-	<classpathentry kind="lib" path="lib/slf4j-api-1.7.25.jar"/>
-	<classpathentry kind="lib" path="lib/spring-aop-4.3.11.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/spring-beans-4.3.11.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/spring-context-4.3.11.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/spring-context-support-4.3.11.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/spring-core-4.3.11.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/spring-data-commons-1.13.7.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/spring-data-keyvalue-1.2.7.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/spring-data-redis-1.8.7.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/spring-expression-4.3.11.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/spring-oxm-4.3.11.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/spring-tx-4.3.11.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring-data-commons-1.13.11.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring-data-keyvalue-1.2.11.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring-data-redis-1.8.11.RELEASE.jar"/>
 	<classpathentry kind="src" output="eclipsebin/classes" path="src"/>
 	<classpathentry kind="src" output="eclipsebin/web/classes" path="web/src"/>
 	<classpathentry kind="src" output="eclipsebin/classes" path="testsrc"/>
 	<classpathentry kind="src" output="eclipsebin/classes" path="gensrc"/>
 	<classpathentry kind="src" path="/platform"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/commerceservices"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/marketplaceservices"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/promotionengineservices"/>
 	<classpathentry kind="output" path="eclipsebin/notused"/>
 </classpath>
